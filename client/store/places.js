@@ -9,17 +9,17 @@ export const state = () => ({
 
 export const mutations = {
   setPlaces: set('places')
-
-}
-
-export const getters = {
-
 }
 
 export const actions = {
   /** Fetches the list of places */
   async getPlaces({ commit }) {
     const url = `${PLACES_API}`
+    const { data } = await this.$axios.get(url)
+    commit('setPlaces', data)
+  },
+  async getOpenPlaces({ commit }, open) {
+    const url = `${PLACES_API}?open=true`
     const { data } = await this.$axios.get(url)
     commit('setPlaces', data)
   }
