@@ -4,7 +4,7 @@ const axios = require("axios")
 const baseUrl = "https://open-api.myhelsinki.fi/v1"
 
 placesRouter.get("/", async (req, res, next) => {
-  axios.get(`${baseUrl}/places/?limit=100`)
+  axios.get(`${baseUrl}/places/`)
     .then(data => formatData(data.data.data))
     .then(data => filterPlaces(data, req.query))
     .then(data => res.status(200).send(data))
@@ -29,12 +29,14 @@ const filterPlaces = (data, filters) => {
 const checkSchedule = (opening_hours) => {
   const today = new Date()
   const weekDay = today.getDay()
-  const todaySchedule = opening_hours.find(day => day.weekday_id === weekDay)
-  const timeNow = `${today.getHours()}:${today.getMinutes()}`
-  if (timeNow >= todaySchedule.opens && timeNow < todaySchedule.closes) {
-    return true
-  } else if (todaySchedule.open24h) {
-    return true
+  if (opening_hours) {
+    const todaySchedule = opening_hours.find(day => day.weekday_id === weekDay)
+    const timeNow = `${today.getHours()}:${today.getMinutes()}`
+    if (timeNow >= todaySchedule.opens && timeNow < todaySchedule.closes) {
+      return true
+    } else if (todaySchedule.open24h) {
+      return true
+    }
   }
   return false
 }
@@ -50,6 +52,7 @@ const formatData = (data) => {
       location: place.location,
       img: (place.description.images && place.description.images.length) ? place.description.images[0].url : null,
       description: place.description.body,
+      openNow: checkSchedule(place.opening_hours.hours),
       opening_hours: place.opening_hours.hours
     }
     formatedData.push(formatedPlace)

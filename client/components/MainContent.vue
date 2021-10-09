@@ -1,5 +1,10 @@
 <template lang="pug">
-  v-row(no-gutters)
+  v-container.mt-10
+    v-row
+      v-col(cols=8)
+        places-list
+      v-col(cols=4)
+        .text Map here
 </template>
 
 <script>
