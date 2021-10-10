@@ -64,7 +64,7 @@ export default {
 
     async handleGetPlaces() {
       this.showOpenSwitch ? await this.getPlaces({ open: true }) : await this.getPlaces({ open: false })
-      this.setPlacesOnPage({ placesOnPage: tenPlaces })
+      this.setPlacesOnPage({ placesOnPage: this.tenPlaces })
     }
   }
 }

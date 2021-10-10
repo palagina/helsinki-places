@@ -39,7 +39,6 @@ export default {
   watch: {
     placesOnPage(val) {
       this.map.resize()
-      console.log('new places', val)
       this.updateSources(this.map)
       this.placesGeoJson = this.getPlacesGeoJson()
     }
@@ -65,18 +64,16 @@ export default {
         }
 
         this.placesOnPage.forEach((place) => {
-          if (place.location.lat && place.location.lon) {
-            geoJson.features.push({
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [place.location.lon, place.location.lat]
-              },
-              properties: {
-                id: place.id
-              }
-            })
-          }
+          geoJson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [place.location.lon, place.location.lat]
+            },
+            properties: {
+              id: place.id
+            }
+          })
         })
         return geoJson
       }
