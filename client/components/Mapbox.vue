@@ -29,7 +29,6 @@ export default {
 
     selectedPlaceGeoJson() {
       if (this.selectedPlace) {
-        console.log('selected')
         const selectedJson = {
           type: 'FeatureCollection',
           features: [
