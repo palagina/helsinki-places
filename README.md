@@ -9,7 +9,7 @@ Web app built with Nuxt.js, a framework for Vue.js. Pug.js templating library is
 ## Start the project
 
 1. Go to 'server' and 'client directories and install node modules
-`npm start`
+`npm install`
 
 2. Start backend from 'server' directory by running
 `npm run watch`
