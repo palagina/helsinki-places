@@ -1,24 +1,27 @@
 <template lang="pug">
   v-container
+    v-overlay(v-model="waitingResponse").loader
+      v-progress-circular(indeterminate color="teal accent-4" size=50)
+    v-switch(
+      v-model="showOpenSwitch"
+      label="Show places open now"
+      @change="handleGetPlaces()"
+    )
     v-col(cols=12 v-if="places.length" )
-      v-switch(
-        v-model="showOpenSwitch"
-        label="Show places open now"
-        @change="handleGetPlaces()"
-      )
       v-pagination(
         v-model="page"
         :length="Math.ceil(places.length/10)"
       ).mb-5
-      v-row(v-for="place in placesOnPage" :key="place.id")
+
+      v-row(v-for="place in tenPlaces" :key="place.id")
         place-card(:place="place")
       v-pagination(
         v-model="page"
         :length="Math.ceil(places.length/10)"
-        )
+        ).mt-5
 
     v-col(cols=12 v-else)
-      .text No data available. Check your connection
+      span(v-if="!waitingResponse") No data available
 </template>
 
 <script>
@@ -37,17 +40,18 @@ export default {
     return {
       selectedPlace: null,
       page: 1,
-      showOpenSwitch: false
+      showOpenSwitch: false,
+      loading: true
     }
   },
 
   computed: {
-    ...mapState('places', ['places']),
+    ...mapState('places', ['places', 'waitingResponse']),
 
-    placesOnPage() {
-      const places = this.places.slice(10 * (this.page - 1), 10 * this.page)
-      console.log(places)
-      return places
+    tenPlaces() {
+      const tenPlaces = this.places.slice(10 * (this.page - 1), 10 * this.page)
+      this.setPlacesOnPage({ placesOnPage: tenPlaces })
+      return tenPlaces
     }
   },
 
@@ -56,15 +60,17 @@ export default {
   },
 
   methods: {
-    ...mapActions('places', ['getPlaces', 'getOpenPlaces']),
+    ...mapActions('places', ['getPlaces', 'setPlacesOnPage']),
 
     async handleGetPlaces() {
-      this.showOpenSwitch ? await this.getOpenPlaces() : await this.getPlaces()
+      this.showOpenSwitch ? await this.getPlaces({ open: true }) : await this.getPlaces({ open: false })
+      this.setPlacesOnPage({ placesOnPage: tenPlaces })
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-
+  .loader
+    z-index: 1000
 </style>

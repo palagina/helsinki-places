@@ -14,7 +14,7 @@
             v-img(v-if="place.img" :src="place.img" height="150px" width="150px")
             v-img(v-else src="/no-img.svg" height="150px" width="150px")
           v-col(cols=9)
-            v-card-text.pt-0 {{place.description | truncate(200, '...' )}}
+            v-card-text.pt-0 {{place.description | truncate(100, '...' )}}
             v-card-text.pt-1 Address: {{place.location.address.street_address}}
             v-card-actions
               v-btn(text color="teal accent-4" @click="detailsDialogOpen = true") See details

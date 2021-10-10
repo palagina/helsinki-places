@@ -4,23 +4,33 @@ import { PLACES_API } from '@/config'
 export const namespaced = true
 
 export const state = () => ({
-  places: []
+  places: [],
+  placesOnPage: [],
+  waitingResponse: true
 })
 
 export const mutations = {
-  setPlaces: set('places')
+  setPlaces: set('places'),
+  setWaitingResponse: set('waitingResponse'),
+  setPlacesForPage: set('placesOnPage'),
 }
 
 export const actions = {
   /** Fetches the list of places */
-  async getPlaces({ commit }) {
-    const url = `${PLACES_API}`
-    const { data } = await this.$axios.get(url)
-    commit('setPlaces', data)
+  async getPlaces({ commit }, { open }) {
+    try {
+      commit('setWaitingResponse', true)
+      const url = open === true ? `${PLACES_API}?open=true` : `${PLACES_API}`
+      const { data } = await this.$axios.get(url)
+      commit('setPlaces', data)
+      commit('setWaitingResponse', false)
+    } catch {
+      commit('setWaitingResponse', false)
+    }
   },
-  async getOpenPlaces({ commit }, open) {
-    const url = `${PLACES_API}?open=true`
-    const { data } = await this.$axios.get(url)
-    commit('setPlaces', data)
-  }
+
+  /** Sets currently rendered places to the store*/
+  setPlacesOnPage({ commit }, { placesOnPage }) {
+    commit('setPlacesForPage', placesOnPage)
+  },
 }

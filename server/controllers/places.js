@@ -32,9 +32,9 @@ const checkSchedule = (opening_hours) => {
   if (opening_hours) {
     const todaySchedule = opening_hours.find(day => day.weekday_id === weekDay)
     const timeNow = `${today.getHours()}:${today.getMinutes()}`
-    if (timeNow >= todaySchedule.opens && timeNow < todaySchedule.closes) {
+    if (todaySchedule && timeNow >= todaySchedule.opens && timeNow < todaySchedule.closes) {
       return true
-    } else if (todaySchedule.open24h) {
+    } else if (todaySchedule && todaySchedule.open24h) {
       return true
     }
   }
