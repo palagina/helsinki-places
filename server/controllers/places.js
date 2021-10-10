@@ -4,7 +4,7 @@ const axios = require("axios")
 const baseUrl = "https://open-api.myhelsinki.fi/v1"
 
 placesRouter.get("/", async (req, res, next) => {
-  axios.get(`${baseUrl}/places/?limit=100`)
+  axios.get(`${baseUrl}/places/`)
     .then(data => formatData(data.data.data))
     .then(data => filterPlaces(data, req.query))
     .then(data => res.status(200).send(data))

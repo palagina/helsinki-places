@@ -2,22 +2,34 @@
   v-container
     v-overlay(v-model="waitingResponse").loader
       v-progress-circular(indeterminate color="teal accent-4" size=50)
-    v-switch(
-      v-model="showOpenSwitch"
-      label="Show places open now"
-      @change="handleGetPlaces()"
-    )
+    v-row
+      v-switch(
+        v-model="showOpenSwitch"
+        label="Show places open now"
+        @change="handleGetPlaces()"
+      )
+      v-spacer
+      v-select(
+        outlined
+        dense
+        v-model="countPerPage"
+        :items="[5, 10, 20, 30, 40, 50]"
+        label="Select items per page"
+        @change="setPlacesPerPage()"
+      ).mx-5
     v-col(cols=12 v-if="places.length" )
       v-pagination(
         v-model="page"
-        :length="Math.ceil(places.length/10)"
+        @input="setPlacesPerPage()"
+        :length="paginationLength"
       ).mb-5
 
-      v-row(v-for="place in tenPlaces" :key="place.id")
+      v-row(v-for="place in placesPerPage" :key="place.id")
         place-card(:place="place")
       v-pagination(
         v-model="page"
-        :length="Math.ceil(places.length/10)"
+        @input="setPlacesPerPage()"
+        :length="paginationLength"
         ).mt-5
 
     v-col(cols=12 v-else)
@@ -41,17 +53,17 @@ export default {
       selectedPlace: null,
       page: 1,
       showOpenSwitch: false,
-      loading: true
+      loading: true,
+      countPerPage: 10,
+      placesPerPage: []
     }
   },
 
   computed: {
     ...mapState('places', ['places', 'waitingResponse']),
 
-    tenPlaces() {
-      const tenPlaces = this.places.slice(10 * (this.page - 1), 10 * this.page)
-      this.setPlacesOnPage({ placesOnPage: tenPlaces })
-      return tenPlaces
+    paginationLength() {
+      return Math.ceil(this.places.length/this.countPerPage)
     }
   },
 
@@ -64,7 +76,13 @@ export default {
 
     async handleGetPlaces() {
       this.showOpenSwitch ? await this.getPlaces({ open: true }) : await this.getPlaces({ open: false })
-      this.setPlacesOnPage({ placesOnPage: this.tenPlaces })
+      this.setPlacesOnPage({ placesOnPage: this.placesPerPage })
+      this.setPlacesPerPage()
+    },
+
+    setPlacesPerPage() {
+      this.placesPerPage = this.places.slice(this.countPerPage * (this.page - 1), this.countPerPage * this.page)
+      this.setPlacesOnPage({ placesOnPage: this.placesPerPage })
     }
   }
 }
