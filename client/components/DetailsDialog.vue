@@ -42,7 +42,7 @@ export default {
   methods: {
     getOpeningHours(day) {
       const arrayOfWeekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-      const dayName = arrayOfWeekdays[day.weekday_id - 1]
+      const dayName = arrayOfWeekdays[day.weekday_id-1]
       let schedule = null
       if (day.open24h === false && day.opens && day.closes) {
         schedule = `${dayName}: ${day.opens.slice(0, -3)} - ${day.closes.slice(0, -3)}`

@@ -4,7 +4,7 @@ const axios = require("axios")
 const baseUrl = "https://open-api.myhelsinki.fi/v1"
 
 placesRouter.get("/", async (req, res, next) => {
-  axios.get(`${baseUrl}/places/`)
+  axios.get(`${baseUrl}/places/?limit=100`)
     .then(data => formatData(data.data.data))
     .then(data => filterPlaces(data, req.query))
     .then(data => res.status(200).send(data))
@@ -30,7 +30,7 @@ const checkSchedule = (opening_hours) => {
   const today = new Date()
   const weekDay = today.getDay()
   if (opening_hours) {
-    const todaySchedule = opening_hours.find(day => day.weekday_id === weekDay)
+    const todaySchedule = opening_hours.find(day => (day.weekday_id-1) === weekDay)
     const timeNow = `${today.getHours()}:${today.getMinutes()}`
     if (todaySchedule && timeNow >= todaySchedule.opens && timeNow < todaySchedule.closes) {
       return true

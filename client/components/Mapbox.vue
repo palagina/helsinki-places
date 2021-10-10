@@ -16,7 +16,7 @@ export default {
     return {
       mapIsLoaded: false,
       accessToken: 'pk.eyJ1IjoibGltYm9uZXZlcm1pbmQiLCJhIjoiY2t1azU0aWl0MHFmYTJ3bzZlYTNrc2l3MSJ9.HExVA_c078AxKTR37M9pow',
-      placesGeoJson: []
+      // placesGeoJson: []
     }
   },
   computed: {
@@ -29,34 +29,8 @@ export default {
         zoom: 13
       }
     },
-  },
 
-  created() {
-    this.map = null // Mapbox breaks if stored as reactive
-    this.placesGeoJson = this.getPlacesGeoJson()
-  },
-
-  watch: {
-    placesOnPage(val) {
-      this.map.resize()
-      this.updateSources(this.map)
-      this.placesGeoJson = this.getPlacesGeoJson()
-    }
-  },
-
-  methods: {
-    mapLoaded(map) {
-      this.map = map
-      this.updateSources(map)
-
-      // map.flyTo({
-      //   center: dot,
-      //   essential: true,
-      //   zoom: 15
-      // })
-    },
-
-    getPlacesGeoJson() {
+    placesGeoJson() {
       if (this.placesOnPage && this.placesOnPage.length) {
         const geoJson = {
           type: 'FeatureCollection',
@@ -79,10 +53,37 @@ export default {
       }
       return []
     },
+  },
+
+  created() {
+    this.map = null
+    // this.placesGeoJson = this.getPlacesGeoJson()
+  },
+
+  watch: {
+    placesOnPage() {
+      this.map.resize()
+      this.updateSources(this.map)
+      // this.placesGeoJson = this.getPlacesGeoJson()
+    }
+  },
+
+  methods: {
+    mapLoaded(map) {
+      console.log('map loaded')
+      this.map = map
+      this.updateSources(map)
+
+      // map.flyTo({
+      //   center: dot,
+      //   essential: true,
+      //   zoom: 15
+      // })
+    },
 
     updateSources(map) {
-      if (this.map.getSource('places')) {
-        this.map.getSource('places').setData(this.placesGeoJson)
+      if (map.getSource('places')) {
+        map.getSource('places').setData(this.placesGeoJson)
       } else {
         // Adding source to the map
         map.addSource('places', {
