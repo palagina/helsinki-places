@@ -12,7 +12,7 @@ Web app built with Nuxt.js, a framework for Vue.js. Pug.js templating library is
 `npm install`
 
 2. Start backend from 'server' directory by running 
-`npm run watch`
+`npm run start`
 By default it will run on http://localhost:3003/api/places/
 
 3. Go to 'client' directory and install node modules 
