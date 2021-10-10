@@ -7,20 +7,17 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-// import Mapbox from 'mapbox-gl-vue'
+import { mapState, mapActions } from 'vuex'
 
 export default {
-  // components: { Mapbox },
   data() {
     return {
       mapIsLoaded: false,
       accessToken: 'pk.eyJ1IjoibGltYm9uZXZlcm1pbmQiLCJhIjoiY2t1azU0aWl0MHFmYTJ3bzZlYTNrc2l3MSJ9.HExVA_c078AxKTR37M9pow',
-      // placesGeoJson: []
     }
   },
   computed: {
-    ...mapState('places', ['placesOnPage']),
+    ...mapState('places', ['placesOnPage', 'selectedPlace']),
     mapOptions() {
       return {
         container: 'map',
@@ -30,13 +27,35 @@ export default {
       }
     },
 
+    selectedPlaceGeoJson() {
+      if (this.selectedPlace) {
+        console.log('selected')
+        const selectedJson = {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [this.selectedPlace.location.lon, this.selectedPlace.location.lat]
+              },
+              properties: {
+                id: this.selectedPlace.id
+              }
+            }
+          ]
+        }
+        return selectedJson
+      }
+      return null
+    },
+
     placesGeoJson() {
       if (this.placesOnPage && this.placesOnPage.length) {
         const geoJson = {
           type: 'FeatureCollection',
           features: []
         }
-
         this.placesOnPage.forEach((place) => {
           geoJson.features.push({
             type: 'Feature',
@@ -57,14 +76,21 @@ export default {
 
   created() {
     this.map = null
-    // this.placesGeoJson = this.getPlacesGeoJson()
   },
 
   watch: {
     placesOnPage() {
       this.map.resize()
-      this.updateSources(this.map)
-      // this.placesGeoJson = this.getPlacesGeoJson()
+      this.showAllPointsOnMap(this.map)
+    },
+    selectedPlace(selPlace) {
+      this.map.resize()
+      this.highlightSelectedPlace(this.map)
+      this.map.flyTo({
+        center: [selPlace.location.lon, selPlace.location.lat],
+        essential: true,
+        zoom: 15
+      })
     }
   },
 
@@ -72,16 +98,35 @@ export default {
     mapLoaded(map) {
       console.log('map loaded')
       this.map = map
-      this.updateSources(map)
-
-      // map.flyTo({
-      //   center: dot,
-      //   essential: true,
-      //   zoom: 15
-      // })
+      this.showAllPointsOnMap(map)
     },
 
-    updateSources(map) {
+    highlightSelectedPlace(map){
+      if (map.getSource('selectedPlace')) {
+        map.getSource('selectedPlace').setData(this.selectedPlaceGeoJson)
+      } else {
+        // Adding source to the map
+        map.addSource('selectedPlace', {
+          type: 'geojson',
+          data: this.selectedPlaceGeoJson
+        }),
+
+        // Adding selected place layer to the map
+        map.addLayer({
+          id: 'selectedPoint',
+          minzoom: 11,
+          maxzoom: 20,
+          type: 'circle',
+          source: 'selectedPlace',
+          paint: {
+            'circle-color': 'red',
+            'circle-radius': 15
+          }
+        })
+      }
+    },
+
+    showAllPointsOnMap(map) {
       if (map.getSource('places')) {
         map.getSource('places').setData(this.placesGeoJson)
       } else {

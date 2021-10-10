@@ -19,7 +19,7 @@
             v-card-actions
               v-btn(text color="teal accent-4" @click="detailsDialogOpen = true") See details
               v-spacer
-              v-btn(text color="teal accent-4" @click="") Show on map
+              v-btn(text color="teal accent-4" @click="setSelectedPlace({place: place})") Show on map
       details-dialog(
         :detailsDialogOpen="detailsDialogOpen"
         :place="place"
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapActions} from 'vuex'
 export default {
   filters: {
     truncate (text, length, suffix) {
@@ -49,6 +50,9 @@ export default {
     return {
       detailsDialogOpen: false
     }
+  },
+  methods: {
+    ...mapActions('places', ['setSelectedPlace'])
   }
 }
 </script>

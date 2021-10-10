@@ -23,7 +23,6 @@ const errorHandler = (error, request, response, next) => {
 }
 
 const formatData = (request, response) => {
-  console.log("format")
   const formatedData = []
   response.data.forEach((place) => {
     const formatedPlace = {

@@ -2,6 +2,7 @@ import colors from 'vuetify/es5/util/colors'
 import webpack from 'webpack'
 
 export default {
+  ssr: true,
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - HelPlaces',
